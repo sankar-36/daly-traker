@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { getCourses, initCourse, addTopics } from '../api/api'
 import CourseCard from '../components/CourseCard'
-import Modal from '../components/Modal'
 
 const Courses = () => {
   const [courses, setCourses] = useState([])
@@ -9,11 +8,10 @@ const Courses = () => {
   const [description, setDescription] = useState('')
   const [topicsInput, setTopicsInput] = useState('')
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalCourse, setModalCourse] = useState(null)
-  const [modalTopicsInput, setModalTopicsInput] = useState('')
-  const [modalLoading, setModalLoading] = useState(false)
-  const [modalError, setModalError] = useState(null)
+  // per-course inline add-topic input, loading and error state
+  const [topicInputs, setTopicInputs] = useState({})
+  const [topicLoading, setTopicLoading] = useState({})
+  const [topicError, setTopicError] = useState({})
 
   const load = async () => {
     try {
@@ -43,30 +41,31 @@ const Courses = () => {
     } catch (e) {}
   }
 
-  const openModal = (course) => {
-    setModalCourse(course)
-    setModalTopicsInput('')
-    setModalError(null)
-    setIsModalOpen(true)
+  const handleTopicInputChange = (courseId, value) => {
+    setTopicInputs((p) => ({ ...p, [courseId]: value }))
+    setTopicError((p) => ({ ...p, [courseId]: null }))
   }
 
-  const handleModalAddTopics = async () => {
-    if (!modalCourse) return
-    const input = (modalTopicsInput || '').trim()
+  const handleAddTopic = async (courseId) => {
+    const input = (topicInputs[courseId] || '').trim()
     if (!input) return
-    const topicsArr = input.split(',').map((t) => t.trim()).filter(Boolean)
-    if (topicsArr.length === 0) return
-    setModalLoading(true)
-    setModalError(null)
+
+    // support single entry or comma-separated multiple topics
+    const topicsArr = input.includes(',')
+      ? input.split(',').map((t) => t.trim()).filter(Boolean)
+      : [input]
+
+    setTopicLoading((p) => ({ ...p, [courseId]: true }))
+    setTopicError((p) => ({ ...p, [courseId]: null }))
+
     try {
-      await addTopics(modalCourse._id, topicsArr)
-      setIsModalOpen(false)
-      setModalCourse(null)
+      await addTopics(courseId, topicsArr)
+      setTopicInputs((p) => ({ ...p, [courseId]: '' }))
       load()
     } catch (e) {
-      setModalError(e.response?.data?.message || 'Failed to add topics')
+      setTopicError((p) => ({ ...p, [courseId]: e.response?.data?.message || 'Failed to add topics' }))
     } finally {
-      setModalLoading(false)
+      setTopicLoading((p) => ({ ...p, [courseId]: false }))
     }
   }
 
@@ -91,24 +90,27 @@ const Courses = () => {
         {courses.map((c) => (
           <div key={c._id}>
             <CourseCard course={c} />
-            <div style={{ marginTop: 8 }}>
-              <button className="btn small" type="button" onClick={() => openModal(c)}>Add topics</button>
+            <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <input
+                  placeholder="Add topic(s) — comma to add multiple"
+                  value={topicInputs[c._id] || ''}
+                  onChange={(e) => handleTopicInputChange(c._id, e.target.value)}
+                />
+                <button
+                  className="btn small"
+                  type="button"
+                  onClick={() => handleAddTopic(c._id)}
+                  disabled={topicLoading[c._id]}
+                >
+                  {topicLoading[c._id] ? 'Adding...' : 'Add'}
+                </button>
+              </div>
+              {topicError[c._id] && <div className="error">{topicError[c._id]}</div>}
             </div>
           </div>
         ))}
       </div>
-
-      <Modal open={isModalOpen} title={`Add topics to ${modalCourse?.title || ''}`} onClose={() => setIsModalOpen(false)}>
-        <label>Topics (comma separated)</label>
-        <input value={modalTopicsInput} onChange={(e) => setModalTopicsInput(e.target.value)} />
-        {modalError && <div className="error">{modalError}</div>}
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <button className="btn" type="button" onClick={handleModalAddTopics} disabled={modalLoading}>
-            {modalLoading ? 'Adding...' : 'Add Topics'}
-          </button>
-          <button className="btn" type="button" onClick={() => setIsModalOpen(false)}>Cancel</button>
-        </div>
-      </Modal>
     </div>
   )
 }
