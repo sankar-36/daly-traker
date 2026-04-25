@@ -14,7 +14,7 @@ const Login = () => {
     setError(null)
     try {
       await login(email, password)
-      navigate('/')
+      navigate('/dashbord')
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed')
     }
@@ -31,6 +31,8 @@ const Login = () => {
         <button className="btn" type="submit">Login</button>
         {error && <div className="error">{error}</div>}
       </form>
+      <button onClick={() => navigate('/register')} className="btn-link">Don't have an account? Register</button>
+      <button onClick={() => navigate('/')} className="btn-link">Back to Home</button>
     </div>
   )
 }

@@ -34,6 +34,8 @@ const Register = () => {
         <button className="btn" type="submit">Register</button>
         {error && <div className="error">{error}</div>}
       </form>
+      <button onClick={() => navigate('/login')} className="btn-link">Already have an account? Login</button>
+      <button onClick={() => navigate('/')} className="btn-link">Back to Home</button>
     </div>
   )
 }
