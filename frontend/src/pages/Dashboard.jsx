@@ -3,6 +3,7 @@ import { getCourses, getProgressSummary, getTasks } from '../api/api'
 import CourseCard from '../components/CourseCard'
 import ProgressChart from '../components/ProgressChart'
 
+
 const Dashboard = () => {
   const [courses, setCourses] = useState([])
   const [progress, setProgress] = useState(null)
@@ -29,6 +30,7 @@ const Dashboard = () => {
 
   return (
     <div>
+     
       <h2>Dashboard</h2>
       <div className="grid">
         <div className="card">

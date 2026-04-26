@@ -11,16 +11,20 @@ import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 import LandingPage from './pages/LandingPage'
 import { useLocation } from 'react-router-dom'
+import SidebarLayout from './components/Sidebar'
 
 
 const App = () => {
       const location = useLocation();
       const showNavbar = location.pathname !== "/login" && location.pathname !== "/register";
+      const showSidebar = location.pathname !== "/login" && location.pathname !== "/register" && location.pathname !== "/" && location.pathname =="/home";
      
   return (
     <>
       {showNavbar && <Navbar />}
-      <main className="container">
+      {showSidebar && <SidebarLayout />}
+      
+      <main >
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />

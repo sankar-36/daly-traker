@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import LandingPage from '../pages/LandingPage'
 import Dashboard from '../pages/Dashboard'
 import { useState } from 'react'
+import SidebarLayout from './Sidebar'
 
 
 const Navbar = () => {
@@ -32,9 +33,9 @@ const Navbar = () => {
       <div className="nav-right">
         {user ? (
           <>
-            <Link to="/courses">Courses</Link>
-            <Link to="/tasks">Tasks</Link>
-            <Link to="/profile">Profile</Link>
+            <a href="">Courses</a>
+            <a href=""><Link to="/tasks">Tasks</Link></a>
+            <a href=""><Link to="/profile">Profile</Link></a>
             <button onClick={handleLogout} className="btn">Logout</button>
           </>
         ) : (
@@ -44,9 +45,10 @@ const Navbar = () => {
           </>
         )}
       </div>
+      
     </nav>
     <body>
-       {/* <LandingPage /> */}
+    
     </body>
   </div>
   )
