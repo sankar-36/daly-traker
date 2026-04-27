@@ -1,118 +1,140 @@
-import React, { useState } from 'react';
-import { FiHome, FiCheckSquare, FiPieChart, FiSettings, FiMenu, FiX,FiBook } from 'react-icons/fi';
-import Dashboard from '../pages/Dashboard';
-import Courses from '../pages/Courses';
-import Tasks from '../pages/Tasks';
-import ProgressChart from './ProgressChart';
-import { Router,Route } from 'react-router-dom';
-import ProtectedRoute from './ProtectedRoute';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  FiHome, FiBook, FiCheckSquare, FiUser,
+} from "react-icons/fi";
 
+const NAV_ITEMS = [
+  { to: "/dashboard", icon: FiHome,        label: "Dashboard" },
+  { to: "/courses",   icon: FiBook,        label: "Courses"   },
+  { to: "/tasks",     icon: FiCheckSquare, label: "Tasks"     },
+  { to: "/profile",   icon: FiUser,        label: "Profile"   },
+];
 
-const SidebarLayout = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const[bodyComponent, setBodyComponent] = useState(''); // State to manage body component
+export default function Sidebar({ isOpen }) {
+  const location = useLocation();
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans">
-
-      {/* ── 1. SIDEBAR ── */}
-      <div className={`
-        ${isOpen ? 'w-64' : 'w-20'}
-        bg-slate-900 text-white flex flex-col
-        transition-all duration-300 shrink-0
-      `}>
-        {/* Logo & Toggle */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700 h-16">
-          {isOpen && (
-            <span className="text-xl font-bold text-teal-400 whitespace-nowrap">
-              My Tracker
-            </span>
-          )}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded hover:bg-slate-800 text-teal-400 focus:outline-none"
+    <aside
+      style={{
+        gridArea:    "sidebar",
+        display:     "flex",
+        flexDirection:"column",
+        gap:         "4px",
+        padding:     "16px 10px",
+        background:  "#0f172a",
+        borderRight: "1px solid #1e293b",
+        overflowY:   "auto",
+        overflowX:   "hidden",
+        transition:  "width 0.3s ease",
+      }}
+    >
+      {/* ── Logo / Brand at top ── */}
+      <div
+        style={{
+          display:       "flex",
+          alignItems:    "center",
+          gap:           "10px",
+          padding:       "10px 8px 20px",
+          borderBottom:  "1px solid #1e293b",
+          marginBottom:  "8px",
+          overflow:      "hidden",
+          whiteSpace:    "nowrap",
+        }}
+      >
+        {/* Brand icon */}
+        <span
+          style={{
+            width:          "32px",
+            height:         "32px",
+            borderRadius:   "8px",
+            background:     "linear-gradient(135deg,#2dd4bf,#0891b2)",
+            display:        "flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            flexShrink:     0,
+            fontWeight:     800,
+            fontSize:       "0.85rem",
+            color:          "#0f172a",
+          }}
+        >
+          T
+        </span>
+        {isOpen && (
+          <span
+            style={{
+              color:      "#f1f5f9",
+              fontWeight: 700,
+              fontSize:   "0.95rem",
+              letterSpacing: "0.01em",
+            }}
           >
-            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-          </button>
-        </div>
-
-        {/* Nav Links */}
-        <nav className="flex-1 mt-6 space-y-2 px-2">
-          {[
-            { icon: <FiHome size={22} />, label: 'Dashboard', id: 'dashboard' },
-            { icon: <FiCheckSquare size={22} />, label: 'My Tasks', id: 'tasks' },
-            {icon: <FiBook size={22} />, label: 'Courses', id: 'courses'},
-            { icon: <FiPieChart size={22} />, label: 'Progress', id: 'progress' },
-
-            
-          ].map(({ icon, label, id }) => (
-            <a
-              key={id }
-              href="#" 
-    onClick={(e) => {
-      e.preventDefault(); 
-      setBodyComponent(id);
-    }}
-              className="relative flex items-center p-3 rounded-lg hover:bg-slate-800
-                         hover:text-teal-400 transition-colors cursor-pointer group"
-            >
-              <span className="min-w-[22px]">{icon}</span>
-              {isOpen && <span className="ml-4 font-medium">{label}</span>}
-              {/* Tooltip shown only when sidebar is collapsed */}
-              {!isOpen && (
-                <span className="absolute left-16 ml-2 bg-slate-800 text-white text-sm
-                                 px-2 py-1 rounded opacity-0 group-hover:opacity-100
-                                 transition-opacity whitespace-nowrap z-50 pointer-events-none">
-                  {label}
-                </span>
-              )}
-            </a>
-          ))}
-        </nav>
-
-        {/* Settings (bottom) */}
-        <div className="p-4 border-t border-slate-700">
-          <a
-            href="#"
-            className="relative flex items-center p-2 rounded-lg hover:bg-slate-800
-                       hover:text-teal-400 transition-colors cursor-pointer group"
-          >
-            <span className="min-w-[22px]"><FiSettings size={22} /></span>
-            {isOpen && <span className="ml-4 font-medium">Settings</span>}
-            {!isOpen && (
-              <span className="absolute left-16 ml-2 bg-slate-800 text-white text-sm
-                               px-2 py-1 rounded opacity-0 group-hover:opacity-100
-                               transition-opacity whitespace-nowrap z-50 pointer-events-none">
-                Settings
-              </span>
-            )}
-          </a>
-        </div>
+            My Tracker
+          </span>
+        )}
       </div>
 
-      {/* ── 2. MAIN CONTENT ── ✅ THIS IS WHAT WAS MISSING */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* ── Nav Links ── */}
+      {NAV_ITEMS.map(({ to, icon: Icon, label }) => {
+        const isActive = location.pathname === to ||
+          (to !== "/dashboard" && location.pathname.startsWith(to));
 
-        {/* Scrollable page content */}
-        <main className="flex-1 overflow-y-auto p-6">
-            {bodyComponent === 'dashboard' && 
-            <Route
-            path="/dashbord"
-            element={
-           
-                <Dashboard/>
-             
- }
-          />}
-            {bodyComponent === 'tasks' && <Tasks/>}
-            {bodyComponent === 'progress' && <ProgressChart/>}
-            {bodyComponent === 'courses' && <Courses/>}
-        </main>
+        return (
+          <Link
+            key={to}
+            to={to}
+            title={!isOpen ? label : undefined}   // tooltip when collapsed
+            style={{
+              display:        "flex",
+              alignItems:     "center",
+              gap:            "12px",
+              padding:        "10px 12px",
+              borderRadius:   "10px",
+              textDecoration: "none",
+              background:     isActive
+                ? "linear-gradient(90deg,#164e63,#0e7490)"
+                : "transparent",
+              color:          isActive ? "#2dd4bf" : "#64748b",
+              fontWeight:     isActive ? 600 : 400,
+              fontSize:       "0.875rem",
+              whiteSpace:     "nowrap",
+              overflow:       "hidden",
+              transition:     "background 0.2s, color 0.2s",
+              boxShadow:      isActive ? "0 0 0 1px #0891b240" : "none",
+            }}
+            onMouseEnter={e => {
+              if (!isActive) e.currentTarget.style.background = "#1e293b";
+              if (!isActive) e.currentTarget.style.color = "#f1f5f9";
+            }}
+            onMouseLeave={e => {
+              if (!isActive) e.currentTarget.style.background = "transparent";
+              if (!isActive) e.currentTarget.style.color = "#64748b";
+            }}
+          >
+            <Icon
+              size={20}
+              style={{ flexShrink: 0 }}
+            />
+            {isOpen && <span>{label}</span>}
+          </Link>
+        );
+      })}
 
-      </div>
-
-    </div>
+      {/* ── Bottom spacer / version ── */}
+      {isOpen && (
+        <div
+          style={{
+            marginTop:  "auto",
+            paddingTop: "16px",
+            borderTop:  "1px solid #1e293b",
+            color:      "#334155",
+            fontSize:   "0.75rem",
+            textAlign:  "center",
+          }}
+        >
+          v1.0.0
+        </div>
+      )}
+    </aside>
   );
-};
-
-export default SidebarLayout;
+}

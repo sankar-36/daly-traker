@@ -1,78 +1,51 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import Courses from './pages/Courses'
-import CourseDetail from './pages/CourseDetail'
-import Tasks from './pages/Tasks'
-import Profile from './pages/Profile'
-import ProtectedRoute from './components/ProtectedRoute'
-import LandingPage from './pages/LandingPage'
-import { useLocation } from 'react-router-dom'
-import SidebarLayout from './components/Sidebar'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React from "react";
+
+// Layout
+import PageLayout from "./layout/Pagelayout";
+
+// Components
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// Pages
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Courses from "./pages/Courses";
+import CourseDetail from "./pages/CourseDetail";
+import Tasks from "./pages/Tasks";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/404";
 
 
-const App = () => {
-      const location = useLocation();
-      const showNavbar = location.pathname !== "/login" && location.pathname !== "/register";
-      const showSidebar = location.pathname !== "/login" && location.pathname !== "/register" && location.pathname !== "/" && location.pathname =="/home";
-     
+export default function App() {
+
   return (
-    <>
-      {showNavbar && <Navbar />}
-      {showSidebar && <SidebarLayout />}
-      
-      <main >
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/dashbord"
-            element={
-              <ProtectedRoute>
-                <Dashboard/>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/courses"
-            element={
-              <ProtectedRoute>
-                <Courses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/courses/:id"
-            element={
-              <ProtectedRoute>
-                <CourseDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/tasks"
-            element={
-              <ProtectedRoute>
-                <Tasks />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </main>
-    </>
-  )
-}
+    <BrowserRouter>
+      <Routes>
 
-export default App
+        {/* ── Public Routes ── */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* ── ✅ Fix: ProtectedRoute → AppLayout → Pages (3 layer) ── */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<PageLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/courses" element={<Courses />} />          {/* Layer 3: Pages */}
+            <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+        </Route>
+
+        {/* ── Fallback ── */}
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
