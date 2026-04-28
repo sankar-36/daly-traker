@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   FiHome, FiBook, FiCheckSquare, FiUser,
+  FiPieChart,
 } from "react-icons/fi";
 
 const NAV_ITEMS = [
@@ -9,6 +10,8 @@ const NAV_ITEMS = [
   { to: "/courses",   icon: FiBook,        label: "Courses"   },
   { to: "/tasks",     icon: FiCheckSquare, label: "Tasks"     },
   { to: "/profile",   icon: FiUser,        label: "Profile"   },
+  { to: "/progress",  icon: FiPieChart,    label: "Progress"  },
+  
 ];
 
 export default function Sidebar({ isOpen }) {

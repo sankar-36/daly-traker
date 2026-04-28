@@ -17,6 +17,7 @@ import CourseDetail from "./pages/CourseDetail";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/404";
+import Progress from "./pages/Progress";
 
 
 export default function App() {
@@ -38,7 +39,9 @@ export default function App() {
             <Route path="/courses/:id" element={<CourseDetail />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/progress" element={<Progress />} />
           </Route>
+          
         </Route>
 
         {/* ── Fallback ── */}
