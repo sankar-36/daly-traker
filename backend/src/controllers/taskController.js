@@ -5,18 +5,53 @@ const Task = require('../models/Task');
 // @access  Private
 const addTask = async (req, res, next) => {
   try {
-    const { title, description, dueDate, status } = req.body;
+    const { title, description, priority, category, time } = req.body;
 
+    // ✅ Validation
+    if (!title || !title.trim()) {
+      res.status(400);
+      throw new Error('Task title is required');
+    }
+
+    if (!category) {
+      res.status(400);
+      throw new Error('Category is required (work / personal / study)');
+    }
+
+    if (!['work', 'personal', 'study'].includes(category)) {
+      res.status(400);
+      throw new Error('Category must be work, personal, or study');
+    }
+
+    if (!priority) {
+      res.status(400);
+      throw new Error('Priority is required (high / medium / low)');
+    }
+
+    if (!['high', 'medium', 'low'].includes(priority)) {
+      res.status(400);
+      throw new Error('Priority must be high, medium, or low');
+    }
+
+    if (!time) {
+      res.status(400);
+      throw new Error('Time is required');
+    }
+
+    // ✅ Create task
     const task = new Task({
       user_id: req.user._id,
-      title,
-      description,
-      dueDate,
-      status: status || 'Pending',
+      title: title.trim(),
+      description: description ? description.trim() : '',
+      priority,
+      category,
+      time,
+      isCompleted: false,
     });
 
     const createdTask = await task.save();
     res.status(201).json(createdTask);
+
   } catch (error) {
     next(error);
   }
@@ -39,50 +74,74 @@ const getTasks = async (req, res, next) => {
 // @access  Private
 const updateTask = async (req, res, next) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const { title, description, priority, category, time } = req.body;
 
-    if (task) {
-      if (task.user_id.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error('Not authorized to update this task');
-      }
+    const task = await Task.findById(req.params.taskId);
 
-      task.title = req.body.title || task.title;
-      task.description = req.body.description || task.description;
-      task.dueDate = req.body.dueDate || task.dueDate;
-      task.status = req.body.status || task.status;
-
-      const updatedTask = await task.save();
-      res.json(updatedTask);
-    } else {
+    if (!task) {
       res.status(404);
       throw new Error('Task not found');
-      console.log("Task user:", task.user_id.toString());
     }
+
+    if (task.user_id.toString() !== req.user._id.toString()) {
+      res.status(403);
+      throw new Error('Not authorized');
+    }
+
+    // ✅ மாத்தினது மட்டும் update பண்ணு
+    if (title && title.trim()) task.title = title.trim();
+    if (description !== undefined) task.description = description.trim();
+
+    if (priority) {
+      if (!['high', 'medium', 'low'].includes(priority)) {
+        res.status(400);
+        throw new Error('Priority must be high, medium, or low');
+      }
+      task.priority = priority;
+    }
+
+    if (category) {
+      if (!['work', 'personal', 'study'].includes(category)) {
+        res.status(400);
+        throw new Error('Category must be work, personal, or study');
+      }
+      task.category = category;
+    }
+
+    if (time) task.time = time;
+
+    const updatedTask = await task.save();
+    res.json({
+      message: 'Task updated successfully',
+      task: updatedTask,
+    });
+
   } catch (error) {
     next(error);
   }
 };
+
 
 // @desc    Delete a task
 // @route   DELETE /api/tasks/:id
 // @access  Private
 const deleteTask = async (req, res, next) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findById(req.params.taskId);
 
-    if (task) {
-      if (task.user_id.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error('Not authorized to delete this task');
-      }
-
-      await task.deleteOne();
-      res.json({ message: 'Task removed' });
-    } else {
+    if (!task) {
       res.status(404);
       throw new Error('Task not found');
     }
+
+    if (task.user_id.toString() !== req.user._id.toString()) {
+      res.status(403);
+      throw new Error('Not authorized');
+    }
+
+    await task.deleteOne();
+    res.json({ message: 'Task deleted successfully' });
+
   } catch (error) {
     next(error);
   }

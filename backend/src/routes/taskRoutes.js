@@ -5,6 +5,7 @@ const { protect } = require('../middlewares/authMiddleware');
 
 router.route('/').get(protect, getTasks);
 router.route('/add').post(protect, addTask);
-router.route('/:id').put(protect, updateTask).delete(protect, deleteTask);
+router.route('/:taskId/edittask').patch(protect, updateTask);          // ✅ Add this
+router.route('/:taskId/deletetask').delete(protect, deleteTask);
 
 module.exports = router;

@@ -14,13 +14,26 @@ const taskSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    dueDate: {
-      type: Date,
-    },
-    status: {
+    priority: {
       type: String,
-      enum: ['Pending', 'Complete', 'Overdue'],
-      default: 'Pending',
+      enum: ['high', 'medium', 'low'],
+      default: 'medium',
+    },
+  category: {
+      type: String,
+      enum: ['work', 'personal', 'study'],
+      required: [true, 'Category is required'],
+    },
+      time: {
+      type: String,
+      required: [true, 'Task time is required'],
+      match: [
+        /^([0-1]?\d|2[0-3]):[0-5]\d$/,
+        'Time must be in HH:MM format (e.g. 09:30)',
+      ],
+    },isCompleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
