@@ -29,24 +29,53 @@ const normalizeTopics = (topics) => {
 // @desc    Start a new course and define topics
 // @route   POST /api/courses/init
 // @access  Private
+
+
 const initCourse = async (req, res, next) => {
   try {
-    const { title, description, topics } = req.body;
-    const normalized = normalizeTopics(topics);
+    const { title, description, modules } = req.body;
 
+    // 1. Data Validation: Title illaama course create panna koodathu
+    if (!title || !title.trim()) {
+      res.status(400);
+      throw new Error('Please add a course title');
+    }
+
+    // 2. Validate each module has a title (required by ModuleSchema)
+    const rawModules = modules || [];
+    for (let i = 0; i < rawModules.length; i++) {
+      if (!rawModules[i].title || !rawModules[i].title.trim()) {
+        res.status(400);
+        throw new Error(`Module at index ${i} is missing a title`);
+      }
+    }
+
+    // 3. New Object Instantiation (Puthu Structure-oda)
     const course = new Course({
-      user_id: req.user._id,
-      title,
+      user_id: req.user._id, // Auth middleware-la irunthu varum
+      title: title.trim(),
       description,
-      topics: normalized,
+      modules: rawModules.map((mod) => ({
+        title: mod.title.trim(),
+        // Note: isCurrent is NOT set here — the pre-save hook controls it
+        topics: (mod.topics || [])
+          .map((topic) => ({
+            title: typeof topic === 'string' ? topic.trim() : (topic.title || '').trim(),
+            isDone: topic.isDone ?? false,
+          }))
+          .filter((topic) => topic.title), // filter out topics with no title (required field)
+      })),
     });
 
+    // 4. Save to Database
+    // Inga save aagum pothu namma Model-la ezhuthuna 'pre-save' middleware
+    // automatic-ah progress-ah calculate pannidum.
     const createdCourse = await course.save();
+
     res.status(201).json(createdCourse);
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 };
+
 
 // @desc    Get all user courses
 // @route   GET /api/courses
@@ -63,40 +92,59 @@ const getCourses = async (req, res, next) => {
 // @desc    Append one or many topics to an existing course
 // @route   POST /api/courses/:courseId/topics
 // @access  Private
-const addTopics = async (req, res, next) => {
+const editCourse = async (req, res, next) => {
   try {
     const { courseId } = req.params;
-    const { topics } = req.body;
+    const { title, description, modules } = req.body;
 
     const course = await Course.findById(courseId);
-
     if (!course) {
       res.status(404);
       throw new Error('Course not found');
     }
 
     if (course.user_id.toString() !== req.user._id.toString()) {
-      res.status(401);
-      throw new Error('Not authorized to update this course');
+      res.status(403);
+      throw new Error('Not authorized');
     }
 
-    const newTopics = normalizeTopics(topics);
-    if (!newTopics || newTopics.length === 0) {
-      res.status(400);
-      throw new Error('No topics provided');
+    // ✅ Title update
+    if (title && title.trim()) {
+      course.title = title.trim();
     }
 
-    // append new topics
-    course.topics = course.topics.concat(newTopics);
+    // ✅ Description update
+    if (description !== undefined) {
+      course.description = description;
+    }
 
-    // `.save()` middleware handles progressPercentage recalculation
+    // ✅ Modules update — draft-ல இருந்து வர்றதை replace பண்ணு
+    if (modules && Array.isArray(modules)) {
+      course.modules = modules.map((mod, index) => ({
+        _id: mod._id,  // existing id வச்சிரு
+        title: (mod.title || '').trim(),
+        isCurrent: mod.isCurrent ?? false,
+        order: mod.order ?? index,
+        topics: (mod.topics || []).map((topic) => ({
+          _id: topic._id,  // existing id வச்சிரு
+          title: typeof topic === 'string' ? topic : (topic.title || '').trim(),
+          isDone: topic.isDone ?? false,
+        })).filter((t) => t.title),
+      })).filter((m) => m.title);
+    }
+
     const updatedCourse = await course.save();
+    res.json({
+      message: 'Course updated successfully',
+      course: updatedCourse,
+    });
 
-    res.status(200).json(updatedCourse);
   } catch (error) {
     next(error);
   }
 };
+
+
 
 // @desc    Update a specific topic status and course overall completion
 // @route   PUT /api/courses/:courseId/topics/:topicId
@@ -104,7 +152,7 @@ const addTopics = async (req, res, next) => {
 const updateTopicStatus = async (req, res, next) => {
   try {
     const { courseId, topicId } = req.params;
-    const { completed } = req.body;
+    const { isDone } = req.body;
 
     const course = await Course.findById(courseId);
 
@@ -127,7 +175,7 @@ const updateTopicStatus = async (req, res, next) => {
       throw new Error('Topic not found');
     }
 
-    course.topics[topicIndex].completed = completed;
+    course.topics[topicIndex].isDone = isDone;
     
     // `.save()` middleware handles progressPercentage recalculation
     const updatedCourse = await course.save();
@@ -142,5 +190,5 @@ module.exports = {
   initCourse,
   getCourses,
   updateTopicStatus,
-  addTopics,
+  editCourse,
 };
