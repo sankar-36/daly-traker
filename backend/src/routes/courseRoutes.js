@@ -6,6 +6,6 @@ const { protect } = require('../middlewares/authMiddleware');
 router.route('/').get(protect, getCourses);
 router.route('/init').post(protect, initCourse);
 router.route('/:courseId/editcourse').patch(protect, editCourse);
-router.route('/:courseId/topics/:topicId').put(protect, updateTopicStatus);
+router.route('/:courseId/modules/:moduleId/topics/:topicId/status').patch(protect, updateTopicStatus);
 
 module.exports = router;

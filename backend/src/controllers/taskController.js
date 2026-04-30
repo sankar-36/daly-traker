@@ -120,6 +120,34 @@ const updateTask = async (req, res, next) => {
     next(error);
   }
 };
+const toggleTaskStatus = async (req, res, next) => {
+  try {
+    const task = await Task.findById(req.params.taskId);
+
+    if (!task) {
+      res.status(404);
+      throw new Error('Task not found');
+    }
+
+    if (task.user_id.toString() !== req.user._id.toString()) {
+      res.status(403);
+      throw new Error('Not authorized');
+    }
+
+    // ✅ Boolean flip
+    task.isCompleted = !task.isCompleted;
+
+    const updatedTask = await task.save();
+    res.json({
+      message: `Task marked as ${updatedTask.isCompleted ? 'completed ✅' : 'incomplete ⬜'}`,
+      task: updatedTask,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 
 // @desc    Delete a task
@@ -151,5 +179,6 @@ module.exports = {
   addTask,
   getTasks,
   updateTask,
+  toggleTaskStatus,
   deleteTask,
 };

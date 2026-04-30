@@ -151,36 +151,62 @@ const editCourse = async (req, res, next) => {
 // @access  Private
 const updateTopicStatus = async (req, res, next) => {
   try {
-    const { courseId, topicId } = req.params;
+    const { courseId, moduleId, topicId } = req.params;
     const { isDone } = req.body;
 
-    const course = await Course.findById(courseId);
+    // ✅ Validation
+    if (typeof isDone !== 'boolean') {
+      res.status(400);
+      throw new Error('isDone must be true or false');
+    }
 
+    // ✅ Course கண்டுபிடி
+    const course = await Course.findById(courseId);
     if (!course) {
       res.status(404);
       throw new Error('Course not found');
     }
 
+    // ✅ Authorization
     if (course.user_id.toString() !== req.user._id.toString()) {
-      res.status(401);
-      throw new Error('Not authorized to update this course');
+      res.status(403);
+      throw new Error('Not authorized');
     }
 
-    const topicIndex = course.topics.findIndex(
+    // ✅ Module கண்டுபிடி
+    const moduleIndex = course.modules.findIndex(
+      (m) => m._id.toString() === moduleId
+    );
+    if (moduleIndex === -1) {
+      res.status(404);
+      throw new Error('Module not found');
+    }
+
+    // ✅ Topic கண்டுபிடி
+    const topicIndex = course.modules[moduleIndex].topics.findIndex(
       (t) => t._id.toString() === topicId
     );
-
     if (topicIndex === -1) {
       res.status(404);
       throw new Error('Topic not found');
     }
 
-    course.topics[topicIndex].isDone = isDone;
-    
-    // `.save()` middleware handles progressPercentage recalculation
+    // ✅ Status update பண்ணு
+    course.modules[moduleIndex].topics[topicIndex].isDone = isDone;
+
+    // ✅ Save — pre-save middleware progress calculate பண்ணும்
     const updatedCourse = await course.save();
 
-    res.json(updatedCourse);
+    // Updated topic மட்டும் return பண்ணு
+    const updatedTopic = updatedCourse.modules[moduleIndex].topics[topicIndex];
+
+    res.json({
+      message: `Topic marked as ${isDone ? 'completed ✅' : 'incomplete ⬜'}`,
+      topic: updatedTopic,
+      // Overall progress also return பண்ணு
+      progressPercentage: updatedCourse.progressPercentage,
+    });
+
   } catch (error) {
     next(error);
   }
