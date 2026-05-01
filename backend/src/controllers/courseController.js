@@ -144,11 +144,83 @@ const editCourse = async (req, res, next) => {
   }
 };
 
+// @desc    Add module with topics to course
+// @route   POST /api/courses/:courseId/modules
+// @access  Private
+// ============================================
+const addModuleWithTopics = async (req, res, next) => {
+  try {
+    const { courseId } = req.params;
+    const { title, topics } = req.body;
 
+    // ✅ Module title validation
+    if (!title || !title.trim()) {
+      res.status(400);
+      throw new Error('Module title is required');
+    }
+
+    // ✅ Topics validation
+    if (!topics || !Array.isArray(topics) || topics.length === 0) {
+      res.status(400);
+      throw new Error('At least one topic is required');
+    }
+
+    // ✅ Course கண்டுபிடி
+    const course = await Course.findById(courseId);
+    if (!course) {
+      res.status(404);
+      throw new Error('Course not found');
+    }
+
+    // ✅ Authorization
+    if (course.user_id.toString() !== req.user._id.toString()) {
+      res.status(403);
+      throw new Error('Not authorized');
+    }
+
+    // ✅ Topics build பண்ணு
+    const normalizedTopics = topics
+      .map((t) => ({
+        title: (typeof t === 'string' ? t : t.title || '').trim(),
+        isDone: false,
+      }))
+      .filter((t) => t.title); // empty title filter பண்ணு
+
+    if (normalizedTopics.length === 0) {
+      res.status(400);
+      throw new Error('No valid topics provided');
+    }
+
+    // ✅ Module build பண்ணு
+    const newModule = {
+      title: title.trim(),
+      isCurrent: false,
+      order: course.modules.length,
+      topics: normalizedTopics,
+    };
+
+    // ✅ Course-ல push பண்ணு
+    course.modules.push(newModule);
+    const updatedCourse = await course.save();
+
+    // ✅ புதுசா add ஆன module return பண்ணு
+    const addedModule = updatedCourse.modules[updatedCourse.modules.length - 1];
+
+    res.status(201).json({
+      message: 'Module with topics added successfully ✅',
+      module: addedModule,
+      totalModules: updatedCourse.modules.length,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
 
 // @desc    Update a specific topic status and course overall completion
 // @route   PUT /api/courses/:courseId/topics/:topicId
 // @access  Private
+const { updateDailyLog } = require('../utils/logHelper');
 const updateTopicStatus = async (req, res, next) => {
   try {
     const { courseId, moduleId, topicId } = req.params;
@@ -196,6 +268,7 @@ const updateTopicStatus = async (req, res, next) => {
 
     // ✅ Save — pre-save middleware progress calculate பண்ணும்
     const updatedCourse = await course.save();
+    await updateDailyLog(req.user._id);
 
     // Updated topic மட்டும் return பண்ணு
     const updatedTopic = updatedCourse.modules[moduleIndex].topics[topicIndex];
@@ -215,6 +288,7 @@ const updateTopicStatus = async (req, res, next) => {
 module.exports = {
   initCourse,
   getCourses,
+  addModuleWithTopics,
   updateTopicStatus,
   editCourse,
 };

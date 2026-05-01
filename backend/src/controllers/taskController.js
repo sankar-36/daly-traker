@@ -120,6 +120,7 @@ const updateTask = async (req, res, next) => {
     next(error);
   }
 };
+const { updateDailyLog } = require('../utils/logHelper');
 const toggleTaskStatus = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.taskId);
@@ -138,6 +139,8 @@ const toggleTaskStatus = async (req, res, next) => {
     task.isCompleted = !task.isCompleted;
 
     const updatedTask = await task.save();
+    await updateDailyLog(req.user._id);
+
     res.json({
       message: `Task marked as ${updatedTask.isCompleted ? 'completed ✅' : 'incomplete ⬜'}`,
       task: updatedTask,
