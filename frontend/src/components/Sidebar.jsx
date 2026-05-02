@@ -18,102 +18,34 @@ export default function Sidebar({ isOpen }) {
   const location = useLocation();
 
   return (
-    <aside
-      style={{
-        gridArea:    "sidebar",
-        display:     "flex",
-        flexDirection:"column",
-        gap:         "4px",
-        padding:     "16px 10px",
-        background:  "#0f172a",
-        borderRight: "1px solid #1e293b",
-        overflowY:   "auto",
-        overflowX:   "hidden",
-        transition:  "width 0.3s ease",
-      }}
-    >
+    <aside className="[grid-area:sidebar] flex flex-col gap-1 py-4 px-2.5 bg-slate-900 border-r border-slate-800 overflow-y-auto overflow-x-hidden transition-[width] duration-300 ease-in-out">
       {/* ── Logo / Brand at top ── */}
-      <div
-        style={{
-          display:       "flex",
-          alignItems:    "center",
-          gap:           "10px",
-          padding:       "10px 8px 20px",
-          borderBottom:  "1px solid #1e293b",
-          marginBottom:  "8px",
-          overflow:      "hidden",
-          whiteSpace:    "nowrap",
-        }}
-      >
+      <div className="flex items-center gap-2.5 pt-2.5 px-2 pb-5 border-b border-slate-800 mb-2 overflow-hidden whitespace-nowrap">
         {/* Brand icon */}
-        <span
-          style={{
-            width:          "32px",
-            height:         "32px",
-            borderRadius:   "8px",
-            background:     "linear-gradient(135deg,#2dd4bf,#0891b2)",
-            display:        "flex",
-            alignItems:     "center",
-            justifyContent: "center",
-            flexShrink:     0,
-            fontWeight:     800,
-            fontSize:       "0.85rem",
-            color:          "#0f172a",
-          }}
-        >
+        <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-cyan-600 flex items-center justify-center shrink-0 font-extrabold text-[0.85rem] text-slate-900">
           T
         </span>
         {isOpen && (
-          <span
-            style={{
-              color:      "#f1f5f9",
-              fontWeight: 700,
-              fontSize:   "0.95rem",
-              letterSpacing: "0.01em",
-            }}
-          >
+          <span className="text-[#f1f5f9] font-bold text-[][0.95rem] tracking-[0.01em]">
             My Tracker
           </span>
         )}
       </div>
-
+     
       {/* ── Nav Links ── */}
       {NAV_ITEMS.map(({ to, icon: Icon, label }) => {
-        const isActive = location.pathname === to ||
-          (to !== "/dashboard" && location.pathname.startsWith(to));
+       const isActive = location.pathname === to ||(to !== "/dashboard" && location.pathname.startsWith(to));
 
         return (
           <Link
             key={to}
             to={to}
             title={!isOpen ? label : undefined}   // tooltip when collapsed
-            style={{
-              display:        "flex",
-              alignItems:     "center",
-              gap:            "12px",
-              padding:        "10px 12px",
-              borderRadius:   "10px",
-              textDecoration: "none",
-              background:     isActive
-                ? "linear-gradient(90deg,#164e63,#0e7490)"
-                : "transparent",
-              color:          isActive ? "#2dd4bf" : "#64748b",
-              fontWeight:     isActive ? 600 : 400,
-              fontSize:       "0.875rem",
-              whiteSpace:     "nowrap",
-              overflow:       "hidden",
-              transition:     "background 0.2s, color 0.2s",
-              boxShadow:      isActive ? "0 0 0 1px #0891b240" : "none",
-            }}
-            onMouseEnter={e => {
-              if (!isActive) e.currentTarget.style.background = "#1e293b";
-              if (!isActive) e.currentTarget.style.color = "#f1f5f9";
-            }}
-            onMouseLeave={e => {
-              if (!isActive) e.currentTarget.style.background = "transparent";
-              if (!isActive) e.currentTarget.style.color = "#64748b";
-            }}
-          >
+            className={`flex items-center gap-3 py-2.5 px-3 rounded-[10px] no-underline text-sm whitespace-nowrap overflow-hidden transition-all duration-200 ${
+                isActive
+                  ? "bg-gradient-to-r from-cyan-900 to-cyan-700 text-teal-400 font-semibold shadow-[0_0_0_1px_#0891b240]"
+                  : "bg-transparent text-slate-500 font-normal hover:bg-slate-800/50 hover:text-slate-300"
+              }`}>
             <Icon
               size={20}
               style={{ flexShrink: 0 }}
@@ -125,16 +57,7 @@ export default function Sidebar({ isOpen }) {
 
       {/* ── Bottom spacer / version ── */}
       {isOpen && (
-        <div
-          style={{
-            marginTop:  "auto",
-            paddingTop: "16px",
-            borderTop:  "1px solid #1e293b",
-            color:      "#334155",
-            fontSize:   "0.75rem",
-            textAlign:  "center",
-          }}
-        >
+        <div className="mt-auto pt-[16px] border-t border-slate-800 text-[#334155],text-[0.75rem],text-center">
           v1.0.0
         </div>
       )}

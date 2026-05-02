@@ -1,6 +1,6 @@
 export default {
   plugins: {
-    '@tailwindcss/postcss': {}, // Ithu thaan puthu line
+    tailwindcss: {},
     autoprefixer: {},
   },
 }

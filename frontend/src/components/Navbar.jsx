@@ -39,69 +39,26 @@ export default function Navbar({ isOpen, onToggle }) {
 
   return (
     <>
-      <header
-        style={{
-          gridArea:     "topnav",
-          display:      "flex",
-          alignItems:   "center",
-          gap:          "14px",
-          padding:      "0 20px",
-          background:   "#0f172a",
-          borderBottom: "1px solid #1e293b",
-          zIndex:       100,
-          boxShadow:    "0 1px 8px rgba(0,0,0,0.4)",
-        }}
-      >
+      <header className="[grid-area:topnav] flex items-center gap-3.5 px-5 bg-[#0f172a] border-b border-[#1e293b] z-[100] shadow-[0_1px_8px_rgba(0,0,0,0.4)]">
         {/* ── Sidebar Toggle ── */}
         <button
           id="sidebar-toggle-btn"
           onClick={onToggle}
           title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
-          style={{
-            background:   "none",
-            border:       "none",
-            color:        "#2dd4bf",
-            cursor:       "pointer",
-            padding:      "6px",
-            borderRadius: "8px",
-            display:      "flex",
-            alignItems:   "center",
-            transition:   "background 0.2s",
-          }}
+          className="flex bg-transparent text-[#94a3b8] border -none cursor-pointer p-1.5 rounded-lg items-center transition-colors duration-200"
           onMouseEnter={e => (e.currentTarget.style.background = "#1e293b")}
-          onMouseLeave={e => (e.currentTarget.style.background = "none")}
+          onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
         >
           {isOpen ? <FiX size={22} /> : <FiMenu size={22} />}
         </button>
 
         {/* ── Page Title ── */}
-        <h1
-          style={{
-            margin:     0,
-            color:      "#f1f5f9",
-            fontSize:   "1rem",
-            fontWeight: 600,
-            whiteSpace: "nowrap",
-          }}
-        >
+        <h1 className="m-0 text-[#f1f5f9] test-base font-semibold  whitespace-nowrap overflow-hidden text-ellipsis" >
           {currentTitle}
         </h1>
 
         {/* ── Search Bar ── */}
-        <div
-          style={{
-            marginLeft:   "auto",
-            display:      "flex",
-            alignItems:   "center",
-            gap:          "8px",
-            background:   "#1e293b",
-            border:       "1px solid #334155",
-            borderRadius: "10px",
-            padding:      "6px 14px",
-            width:        "260px",
-            transition:   "border-color 0.2s",
-          }}
-        >
+        <div className="ml-auto flex items-center gap-2 bg-[#1e293b] border border-slate-700 focus-within:border-slate-400 rounded-[10px] px-3.5 py-1.5 w-[260px] transition-colors duration-200" >
           <FiSearch size={15} color="#64748b" />
           <input
             id="navbar-search"
@@ -109,49 +66,16 @@ export default function Navbar({ isOpen, onToggle }) {
             value={searchVal}
             onChange={e => setSearchVal(e.target.value)}
             placeholder="Search courses, tasks…"
-            style={{
-              background: "none",
-              border:     "none",
-              outline:    "none",
-              color:      "#f1f5f9",
-              fontSize:   "0.85rem",
-              width:      "100%",
-            }}
-          />
+            className="bg-transparent border-none outline-none text-[#f1f5f9]  text-[0.85rem] w-full"/>
         </div>
 
         {/* ── Notification Bell ── */}
-        <button
-          id="notification-btn"
-          style={{
-            background:   "none",
-            border:       "none",
-            color:        "#94a3b8",
-            cursor:       "pointer",
-            padding:      "6px",
-            borderRadius: "8px",
-            display:      "flex",
-            alignItems:   "center",
-            position:     "relative",
-            transition:   "color 0.2s",
-          }}
+        <button id="notification-btn" className="bg-none border-none text-[#94a3b8] cursor-pointer p-1.5 rounded-lg relative transition-colors duration-200"
           onMouseEnter={e => (e.currentTarget.style.color = "#f1f5f9")}
-          onMouseLeave={e => (e.currentTarget.style.color = "#94a3b8")}
-        >
+          onMouseLeave={e => (e.currentTarget.style.color = "#94a3b8")} >
           <FiBell size={20} />
           {/* Red badge */}
-          <span
-            style={{
-              position:     "absolute",
-              top:          "5px",
-              right:        "5px",
-              width:        "8px",
-              height:       "8px",
-              background:   "#ef4444",
-              borderRadius: "50%",
-              border:       "2px solid #0f172a",
-            }}
-          />
+          <span className="absolute top-[5px] right-[5px] w-2 h-2 bg-red-500 rounded-full border-2 border-slate-900" />
         </button>
 
         {/* ── User Avatar + Dropdown ── */}
@@ -159,36 +83,12 @@ export default function Navbar({ isOpen, onToggle }) {
           <button
             id="user-avatar-btn"
             onClick={() => setDropdown(d => !d)}
-            style={{
-              display:        "flex",
-              alignItems:     "center",
-              gap:            "8px",
-              background:     "none",
-              border:         "1px solid #334155",
-              borderRadius:   "10px",
-              padding:        "5px 10px",
-              cursor:         "pointer",
-              color:          "#f1f5f9",
-              transition:     "border-color 0.2s",
-            }}
+            className="flex items-center gap-2 bg-transparent border border-slate-700 rounded-[10px] cursor-pointer py-[5px] px-[11px] text-[#f1f5f9] transition-colors duration-200"
             onMouseEnter={e => (e.currentTarget.style.borderColor = "#2dd4bf")}
             onMouseLeave={e => (e.currentTarget.style.borderColor = "#334155")}
           >
             {/* Avatar circle */}
-            <span
-              style={{
-                width:          "28px",
-                height:         "28px",
-                borderRadius:   "50%",
-                background:     "linear-gradient(135deg,#2dd4bf,#0891b2)",
-                color:          "#0f172a",
-                fontWeight:     700,
-                fontSize:       "0.75rem",
-                display:        "flex",
-                alignItems:     "center",
-                justifyContent: "center",
-              }}
-            >
+            <span  className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-cyan-600 text-[#0f172a] font-xs flex items-center justify-center" >
               {initials}
             </span>
             <span style={{ fontSize: "0.85rem", maxWidth: "90px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -210,21 +110,7 @@ export default function Navbar({ isOpen, onToggle }) {
                 style={{ position: "fixed", inset: 0, zIndex: 99 }}
               />
 
-              <div
-                style={{
-                  position:     "absolute",
-                  right:        0,
-                  top:          "46px",
-                  width:        "190px",
-                  background:   "#1e293b",
-                  borderRadius: "12px",
-                  border:       "1px solid #334155",
-                  padding:      "6px",
-                  zIndex:       100,
-                  boxShadow:    "0 12px 32px rgba(0,0,0,0.5)",
-                  animation:    "fadeDown 0.15s ease",
-                }}
-              >
+              <div className="absolute right-0 top-[46px] w-[190px] bg-slate-800 rounded-xl border border-slate-700 p-1.5 z-[100] shadow-[0_12px_32px_rgba(0,0,0,0.5)] animate-[fadeDown_0.15s_ease]"  >
                 {/* Profile */}
                 <DropItem to="/profile" icon={<FiUser size={15} />} label="Profile" onClick={() => setDropdown(false)} />
                 {/* Settings */}
@@ -237,21 +123,7 @@ export default function Navbar({ isOpen, onToggle }) {
                 <button
                   id="logout-btn"
                   onClick={handleLogout}
-                  style={{
-                    display:    "flex",
-                    alignItems: "center",
-                    gap:        "10px",
-                    padding:    "9px 12px",
-                    borderRadius:"8px",
-                    color:      "#ef4444",
-                    background: "none",
-                    border:     "none",
-                    width:      "100%",
-                    fontSize:   "0.85rem",
-                    cursor:     "pointer",
-                    textAlign:  "left",
-                    transition: "background 0.15s",
-                  }}
+                  className="flex items-center gap-2.5 py-[9px] px-3 rounded-lg text-red-500 bg-transparent border-none w-full text-[0.85rem] cursor-pointer text-left transition-colors duration-150 hover:bg-slate-700/50"
                   onMouseEnter={e => (e.currentTarget.style.background = "#0f172a")}
                   onMouseLeave={e => (e.currentTarget.style.background = "none")}
                 >
@@ -281,17 +153,7 @@ function DropItem({ to, icon, label, onClick }) {
     <Link
       to={to}
       onClick={onClick}
-      style={{
-        display:        "flex",
-        alignItems:     "center",
-        gap:            "10px",
-        padding:        "9px 12px",
-        borderRadius:   "8px",
-        color:          "#94a3b8",
-        textDecoration: "none",
-        fontSize:       "0.85rem",
-        transition:     "background 0.15s, color 0.15s",
-      }}
+      className="flex items-center gap-2.5 py-[9px] px-3 rounded-lg text-slate-400 no-underline text-[0.85rem] transition-colors duration-150 hover:bg-slate-800 hover:text-slate-200"
       onMouseEnter={e => {
         e.currentTarget.style.background = "#0f172a";
         e.currentTarget.style.color = "#f1f5f9";

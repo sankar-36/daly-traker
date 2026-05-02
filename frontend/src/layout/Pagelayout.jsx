@@ -29,14 +29,7 @@ export default function PageLayout() {
       <Sidebar isOpen={isOpen} />
 
       {/* Page Content */}
-      <main
-        style={{
-          gridArea: "main",
-          overflowY: "auto",
-          padding: "28px",
-          background: "#f1f5f9",
-        }}
-      >
+      <main className="[grid-area:main] overflow-y-auto p-7 bg-slate-100"className="[grid-area:main] overflow-y-auto p-7 bg-slate-100">
         <Outlet />
       </main>
     </div>
