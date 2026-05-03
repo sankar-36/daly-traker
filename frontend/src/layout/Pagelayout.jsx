@@ -45,7 +45,7 @@ export default function PageLayout() {
       )}
 
       {/* Page Content */}
-      <main className="[grid-area:main] overflow-y-auto bg-slate-100 p-4 sm:p-5 lg:p-7">
+     <main className="[grid-area:main] overflow-y-auto bg-slate-100">
         <Outlet />
       </main>
 

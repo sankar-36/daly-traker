@@ -33,7 +33,7 @@ export default function NotFound() {
         Page Not Found
       </h2>
       <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "32px" }}>
-        நீங்க தேடுற page இல்ல — அல்லது move ஆகிடுச்சு!
+        The page you are looking for does not exist.
       </p>
 
       {/* Buttons */}
