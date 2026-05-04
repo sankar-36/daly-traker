@@ -7,7 +7,7 @@ const addTask = async (req, res, next) => {
   try {
     const { title, description, priority, category, time } = req.body;
 
-    // ✅ Validation
+    //  Validation
     if (!title || !title.trim()) {
       res.status(400);
       throw new Error('Task title is required');
@@ -38,7 +38,7 @@ const addTask = async (req, res, next) => {
       throw new Error('Time is required');
     }
 
-    // ✅ Create task
+    //  Create task
     const task = new Task({
       user_id: req.user._id,
       title: title.trim(),
@@ -88,7 +88,7 @@ const updateTask = async (req, res, next) => {
       throw new Error('Not authorized');
     }
 
-    // ✅ மாத்தினது மட்டும் update பண்ணு
+    // 
     if (title && title.trim()) task.title = title.trim();
     if (description !== undefined) task.description = description.trim();
 
@@ -135,7 +135,7 @@ const toggleTaskStatus = async (req, res, next) => {
       throw new Error('Not authorized');
     }
 
-    // ✅ Boolean flip
+    //  Boolean flip
     task.isCompleted = !task.isCompleted;
 
     const updatedTask = await task.save();

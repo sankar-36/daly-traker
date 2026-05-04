@@ -8,28 +8,28 @@ const dailyLogSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ✅ Date — YYYY-MM-DD format (time இல்லாம)
+    //  Date — YYYY-MM-DD format (time இல்லாம)
     date: {
       type: String,
       required: true,
     },
 
-    // ✅ Task completion data
+    //  Task completion data
     task: {
       totalTasks: { type: Number, default: 0 },
       completedTasks: { type: Number, default: 0 },
       completionPercentage: { type: Number, default: 0 },
     },
 
-    // ✅ Course topic completion data
+    //  Course topic completion data
     course: {
       totalTopics: { type: Number, default: 0 },
       completedTopics: { type: Number, default: 0 },
       completionPercentage: { type: Number, default: 0 },
     },
 
-    // ✅ Streak color — image-ல பாத்த logic
-    // task % + course % average வச்சு color decide பண்ணு
+    //  Streak color  logic
+    // task % + course % average color decide 
     streakValue: {
       type: Number,
       default: 0, // 0, 20, 40, 60, 80, 100
@@ -43,7 +43,7 @@ const dailyLogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ ஒரு user-க்கு ஒரு நாள் — ஒரே ஒரு record மட்டும்
+
 dailyLogSchema.index({ user_id: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('DailyLog', dailyLogSchema);

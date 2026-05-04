@@ -153,32 +153,32 @@ const addModuleWithTopics = async (req, res, next) => {
     const { courseId } = req.params;
     const { title, topics } = req.body;
 
-    // ✅ Module title validation
+    //  Module title validation
     if (!title || !title.trim()) {
       res.status(400);
       throw new Error('Module title is required');
     }
 
-    // ✅ Topics validation
+    //  Topics validation
     if (!topics || !Array.isArray(topics) || topics.length === 0) {
       res.status(400);
       throw new Error('At least one topic is required');
     }
 
-    // ✅ Course கண்டுபிடி
+    //  Course 
     const course = await Course.findById(courseId);
     if (!course) {
       res.status(404);
       throw new Error('Course not found');
     }
 
-    // ✅ Authorization
+    //  Authorization
     if (course.user_id.toString() !== req.user._id.toString()) {
       res.status(403);
       throw new Error('Not authorized');
     }
 
-    // ✅ Topics build பண்ணு
+    //  Topics build 
     const normalizedTopics = topics
       .map((t) => ({
         title: (typeof t === 'string' ? t : t.title || '').trim(),
@@ -191,7 +191,7 @@ const addModuleWithTopics = async (req, res, next) => {
       throw new Error('No valid topics provided');
     }
 
-    // ✅ Module build பண்ணு
+    //  Module build 
     const newModule = {
       title: title.trim(),
       isCurrent: false,
@@ -199,15 +199,15 @@ const addModuleWithTopics = async (req, res, next) => {
       topics: normalizedTopics,
     };
 
-    // ✅ Course-ல push பண்ணு
+    //  Course-ல push 
     course.modules.push(newModule);
     const updatedCourse = await course.save();
 
-    // ✅ புதுசா add ஆன module return பண்ணு
+    
     const addedModule = updatedCourse.modules[updatedCourse.modules.length - 1];
 
     res.status(201).json({
-      message: 'Module with topics added successfully ✅',
+      message: 'Module with topics added successfully ',
       module: addedModule,
       totalModules: updatedCourse.modules.length,
     });
@@ -226,26 +226,26 @@ const updateTopicStatus = async (req, res, next) => {
     const { courseId, moduleId, topicId } = req.params;
     const { isDone } = req.body;
 
-    // ✅ Validation
+    // Validation
     if (typeof isDone !== 'boolean') {
       res.status(400);
       throw new Error('isDone must be true or false');
     }
 
-    // ✅ Course கண்டுபிடி
+    // Course, Module, Topic find 
     const course = await Course.findById(courseId);
     if (!course) {
       res.status(404);
       throw new Error('Course not found');
     }
 
-    // ✅ Authorization
+    //  Authorization
     if (course.user_id.toString() !== req.user._id.toString()) {
       res.status(403);
       throw new Error('Not authorized');
     }
 
-    // ✅ Module கண்டுபிடி
+    //  Module find
     const moduleIndex = course.modules.findIndex(
       (m) => m._id.toString() === moduleId
     );
@@ -254,7 +254,7 @@ const updateTopicStatus = async (req, res, next) => {
       throw new Error('Module not found');
     }
 
-    // ✅ Topic கண்டுபிடி
+    //  Topic find
     const topicIndex = course.modules[moduleIndex].topics.findIndex(
       (t) => t._id.toString() === topicId
     );
@@ -263,18 +263,18 @@ const updateTopicStatus = async (req, res, next) => {
       throw new Error('Topic not found');
     }
 
-    // ✅ Status update பண்ணு
+    //Status update 
     course.modules[moduleIndex].topics[topicIndex].isDone = isDone;
 
-    // ✅ Save — pre-save middleware progress calculate பண்ணும்
+    // Save — pre-save middleware progress calculate 
     const updatedCourse = await course.save();
     await updateDailyLog(req.user._id);
 
-    // Updated topic மட்டும் return பண்ணு
+    // Updated topic return 
     const updatedTopic = updatedCourse.modules[moduleIndex].topics[topicIndex];
 
     res.json({
-      message: `Topic marked as ${isDone ? 'completed ✅' : 'incomplete ⬜'}`,
+      message: `Topic marked as ${isDone ? 'completed ' : 'incomplete '}`,
       topic: updatedTopic,
       // Overall progress also return பண்ணு
       progressPercentage: updatedCourse.progressPercentage,
