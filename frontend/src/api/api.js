@@ -25,13 +25,15 @@ export const updateProfile = (payload) => api.put('/auth/profile', payload)
 
 export const getCourses = () => api.get('/courses')
 export const initCourse = (payload) => api.post('/courses/init', payload)
-export const updateTopicStatus = (courseId, topicId, payload) => api.put(`/courses/${courseId}/topics/${topicId}`, payload)
+export const updateTopicStatus = (courseId, moduleId, topicId, payload) =>
+  api.patch(`/courses/${courseId}/modules/${moduleId}/topics/${topicId}/status`, payload)
 export const addTopics = (courseId, topics) => api.post(`/courses/${courseId}/topics`, { topics })
 
 export const getTasks = () => api.get('/tasks')
 export const addTask = (payload) => api.post('/tasks/add', payload)
-export const updateTask = (id, payload) => api.put(`/tasks/${id}`, payload)
-export const deleteTask = (id) => api.delete(`/tasks/${id}`)
+export const updateTask = (id, payload) => api.patch(`/tasks/${id}/edittask`, payload)
+export const toggleTaskStatus = (id) => api.patch(`/tasks/${id}/toggletaskstatus`)
+export const deleteTask = (id) => api.delete(`/tasks/${id}/deletetask`)
 
 export const getProgressSummary = () => api.get('/progress/summary')
 

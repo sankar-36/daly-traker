@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
+import AddCourse from "./pages/AddCourse";
 import CourseDetail from "./pages/CourseDetail";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
@@ -36,6 +37,7 @@ export default function App() {
           <Route element={<PageLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/courses" element={<Courses />} />          {/* Layer 3: Pages */}
+            <Route path="/courses/add" element={<AddCourse />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/profile" element={<Profile />} />

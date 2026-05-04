@@ -5,7 +5,7 @@ const Task = require('../models/Task');
 // @access  Private
 const addTask = async (req, res, next) => {
   try {
-    const { title, description, priority, category, time } = req.body;
+    const { title, description, priority, category, time, isCompleted } = req.body;
 
     //  Validation
     if (!title || !title.trim()) {
@@ -46,7 +46,7 @@ const addTask = async (req, res, next) => {
       priority,
       category,
       time,
-      isCompleted: false,
+      isCompleted: typeof isCompleted === 'boolean' ? isCompleted : false,
     });
 
     const createdTask = await task.save();
@@ -74,7 +74,7 @@ const getTasks = async (req, res, next) => {
 // @access  Private
 const updateTask = async (req, res, next) => {
   try {
-    const { title, description, priority, category, time } = req.body;
+    const { title, description, priority, category, time, isCompleted } = req.body;
 
     const task = await Task.findById(req.params.taskId);
 
@@ -109,6 +109,7 @@ const updateTask = async (req, res, next) => {
     }
 
     if (time) task.time = time;
+    if (typeof isCompleted === 'boolean') task.isCompleted = isCompleted;
 
     const updatedTask = await task.save();
     res.json({

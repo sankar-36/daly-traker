@@ -9,6 +9,7 @@ import {
 const PAGE_TITLES = {
   "/dashboard": "Dashboard",
   "/courses": "Courses",
+  "/courses/add": "Add Course",
   "/tasks": "Tasks",
   "/profile": "Profile",
   "/progress": "Progress",
