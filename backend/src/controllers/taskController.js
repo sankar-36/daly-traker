@@ -1,4 +1,5 @@
 const Task = require('../models/Task');
+const { updateDailyLog } = require('../utils/logHelper');
 
 // @desc    Create a new daily task
 // @route   POST /api/tasks/add
@@ -50,6 +51,7 @@ const addTask = async (req, res, next) => {
     });
 
     const createdTask = await task.save();
+    await updateDailyLog(req.user._id);
     res.status(201).json(createdTask);
 
   } catch (error) {
@@ -112,6 +114,7 @@ const updateTask = async (req, res, next) => {
     if (typeof isCompleted === 'boolean') task.isCompleted = isCompleted;
 
     const updatedTask = await task.save();
+    await updateDailyLog(req.user._id);
     res.json({
       message: 'Task updated successfully',
       task: updatedTask,
@@ -121,7 +124,6 @@ const updateTask = async (req, res, next) => {
     next(error);
   }
 };
-const { updateDailyLog } = require('../utils/logHelper');
 const toggleTaskStatus = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.taskId);
@@ -172,6 +174,7 @@ const deleteTask = async (req, res, next) => {
     }
 
     await task.deleteOne();
+    await updateDailyLog(req.user._id);
     res.json({ message: 'Task deleted successfully' });
 
   } catch (error) {

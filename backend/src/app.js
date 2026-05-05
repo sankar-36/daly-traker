@@ -20,6 +20,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/progress', require('./routes/progressRoutes'));
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/streak', require('./routes/streakRoutes'));
 
 app.get('/', (req, res) => {
   res.send('API is running...');

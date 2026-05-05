@@ -9,7 +9,7 @@ const topicSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-});
+}, { timestamps: true });
 const ModuleSchema = new mongoose.Schema({
   title: { type: String, required: true },
   isCurrent: { type: Boolean, default: false },
