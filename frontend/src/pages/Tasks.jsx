@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addTask, getTasks, toggleTaskStatus, updateTask } from "../api/api";
+import { addTask, getTasks, toggleTaskStatus, updateTask, deleteTask } from "../api/api";
 
 const priorityConfig = {
   high: "bg-red-100 text-red-600",
@@ -22,7 +22,7 @@ const emptyTaskForm = {
   isCompleted: false,
 };
 
-function TaskModal({ onClose, onSave, editTask, saving, error }) {
+function TaskModal({ onClose, onSave, onDelete, editTask, saving, deleting, error }) {
   const [form, setForm] = useState(() =>
     editTask
       ? {
@@ -188,12 +188,23 @@ function TaskModal({ onClose, onSave, editTask, saving, error }) {
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || deleting}
               className="flex-1 rounded-xl bg-gray-900 py-2.5 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {saving ? "Saving..." : editTask ? "Save Changes" : "Add Task"}
             </button>
           </div>
+
+          {editTask && onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={deleting || saving}
+              className="mt-2 w-full rounded-xl border border-red-200 bg-red-50 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {deleting ? "Deleting..." : "Delete Task"}
+            </button>
+          )}
         </form>
       </div>
     </div>
@@ -315,6 +326,25 @@ export default function TaskPage() {
         e?.response?.data?.message ||
           e?.response?.data?.error ||
           "Unable to update task."
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editTask) return;
+    try {
+      setSaving(true);
+      setModalError("");
+      await deleteTask(editTask._id);
+      setTasks((current) => current.filter((task) => task._id !== editTask._id));
+      setEditTask(null);
+    } catch (e) {
+      setModalError(
+        e?.response?.data?.message ||
+          e?.response?.data?.error ||
+          "Unable to delete task."
       );
     } finally {
       setSaving(false);
@@ -526,6 +556,7 @@ export default function TaskPage() {
         <TaskModal
           onClose={() => setEditTask(null)}
           onSave={handleEdit}
+          onDelete={handleDelete}
           editTask={editTask}
           saving={saving}
           error={modalError}

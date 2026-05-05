@@ -36,5 +36,9 @@ export const toggleTaskStatus = (id) => api.patch(`/tasks/${id}/toggletaskstatus
 export const deleteTask = (id) => api.delete(`/tasks/${id}/deletetask`)
 
 export const getProgressSummary = () => api.get('/progress/summary')
+export const getProgressOverview = () => api.get('/progress/overview')
+export const getProfileStreak = () => api.get('/progress/streak')
+export const getTodayStreak = () => api.get('/streak/today')
+export const getDashboard = () => api.get('/dashboard')
 
 export default api
