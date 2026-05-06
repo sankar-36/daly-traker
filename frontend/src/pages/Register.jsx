@@ -47,8 +47,8 @@ const Register = () => {
 
       {/* Decorative blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute rounded-full -top-32 -right-32 w-96 h-96 bg-amber-100/60 blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-rose-100/50 blur-3xl" />
+        <div className="absolute rounded-full -top-32 -right-32 w-96 h-96 bg-blue-100/60 blur-3xl" />
+        <div className="absolute -bottom-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-blue-100/50 blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-sm sm:max-w-md">
@@ -58,7 +58,7 @@ const Register = () => {
 
           {/* Brand mark */}
           <div className="flex justify-center mb-8">
-            <div className="flex items-center justify-center w-12 h-12 shadow-md rounded-2xl bg-gradient-to-br from-amber-400 to-rose-400 shadow-amber-200">
+            <div className="flex items-center justify-center w-12 h-12 shadow-md rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-200">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
               </svg>
@@ -106,7 +106,7 @@ const Register = () => {
                   placeholder="yourname"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full py-3 pl-10 pr-4 text-sm transition duration-200 border rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                  className="w-full py-3 pl-10 pr-4 text-sm transition duration-200 border rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparen"
                 />
               </div>
             </div>
@@ -129,7 +129,7 @@ const Register = () => {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full py-3 pl-10 pr-4 text-sm transition duration-200 border rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                  className="w-full py-3 pl-10 pr-4 text-sm transition duration-200 border rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
                 />
               </div>
             </div>
@@ -152,7 +152,7 @@ const Register = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full py-3 pl-10 text-sm transition duration-200 border pr-11 rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                  className="w-full py-3 pl-10 text-sm transition duration-200 border pr-11 rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
                 />
                 <button
                   type="button"
@@ -209,7 +209,7 @@ const Register = () => {
                       ? 'border-rose-300 focus:ring-rose-300'
                       : confirmPassword && confirmPassword === password
                       ? 'border-emerald-300 focus:ring-emerald-300'
-                      : 'border-stone-200 focus:ring-amber-300'
+                      : 'border-stone-200 focus:ring-blue-300'
                     }`}
                 />
                 <button
@@ -251,7 +251,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-rose-400 hover:from-amber-500 hover:to-rose-500 text-white text-sm font-semibold tracking-wide shadow-md shadow-amber-200/60 hover:shadow-lg hover:shadow-amber-200/80 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+             className="w-full mt-2 py-3 px-6 rounded-xl bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white text-sm font-semibold tracking-wide shadow-md shadow-blue-200/60 hover:shadow-lg hover:shadow-blue-200/80 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -279,7 +279,7 @@ const Register = () => {
             Already have an account?{' '}
             <button
               onClick={() => navigate('/login')}
-              className="font-semibold transition-colors text-amber-500 hover:text-amber-600"
+              className="font-semibold text-blue-500 transition-colors hover:text-blue-600"
             >
               Sign in
             </button>

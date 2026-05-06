@@ -30,8 +30,8 @@ const Login = () => {
 
       {/* Decorative blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute rounded-full -top-32 -left-32 w-96 h-96 bg-amber-100/60 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-rose-100/50 blur-3xl" />
+        <div className="absolute rounded-full -top-32 -left-32 w-96 h-96 bg-blue-100/60 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-blue-100/50 blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-sm sm:max-w-md">
@@ -41,7 +41,7 @@ const Login = () => {
 
           {/* Logo / Brand mark */}
           <div className="flex justify-center mb-8">
-            <div className="flex items-center justify-center w-12 h-12 shadow-md rounded-2xl bg-gradient-to-br from-amber-400 to-rose-400 shadow-amber-200">
+            <div className="flex items-center justify-center w-12 h-12 shadow-md rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-200">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
               </svg>
@@ -89,7 +89,8 @@ const Login = () => {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full py-3 pl-10 pr-4 text-sm transition duration-200 border rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                  // className="w-full py-3 pl-10 pr-4 text-sm transition duration-200 border rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                  className="w-full py-3 pl-10 pr-4 text-sm transition duration-200 border rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
                 />
               </div>
             </div>
@@ -102,7 +103,7 @@ const Login = () => {
                 </label>
                 <button
                   type="button"
-                  className="text-xs font-medium transition-colors text-amber-500 hover:text-amber-600"
+                  className="text-xs font-medium transition-colorsfrom-indigo-500 to-blue-600 shadow-indigo-200"
                 >
                   Forgot password?
                 </button>
@@ -120,8 +121,9 @@ const Login = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full py-3 pl-10 text-sm transition duration-200 border pr-11 rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
-                />
+                  // className="w-full py-3 pl-10 text-sm transition duration-200 border pr-11 rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent"
+                  className="w-full py-3 pl-10 text-sm transition duration-200 border pr-11 rounded-xl border-stone-200 bg-stone-50/60 text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
+                /> 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -146,8 +148,9 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-rose-400 hover:from-amber-500 hover:to-rose-500 text-white text-sm font-semibold tracking-wide shadow-md shadow-amber-200/60 hover:shadow-lg hover:shadow-amber-200/80 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
-            >
+            //   className="w-full mt-2 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-rose-400 hover:from-amber-500 hover:to-rose-500 text-white text-sm font-semibold tracking-wide shadow-md shadow-amber-200/60 hover:shadow-lg hover:shadow-amber-200/80 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              // >
+            className="w-full mt-2 py-3 px-6 rounded-xl bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 text-white text-sm font-semibold tracking-wide shadow-md shadow-blue-200/60 hover:shadow-lg hover:shadow-blue-200/80 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2">
               {isLoading ? (
                 <>
                   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -174,7 +177,7 @@ const Login = () => {
             Don't have an account?{' '}
             <button
               onClick={() => navigate('/register')}
-              className="font-semibold transition-colors text-amber-500 rgb(10, 31, 68)"
+              className="font-semibold text-blue-500 transition-colors"
             >
               Register
             </button>

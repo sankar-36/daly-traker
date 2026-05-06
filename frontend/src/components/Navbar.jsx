@@ -35,7 +35,7 @@ export default function Navbar({ isOpen, onToggle }) {
   const handleLogout = () => {
     logout();
     setDropdown(false);
-    navigate("/login");
+    navigate("/");
   };
 
   return (
