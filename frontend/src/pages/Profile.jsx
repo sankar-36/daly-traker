@@ -3,11 +3,11 @@ import { getProfileStreak, getTodayStreak } from "../api/api";
 
 // ── Streak Heatmap ─────────────────────────────────────
 const heatColors = [
-  "bg-gray-800",
-  "bg-emerald-900",
-  "bg-emerald-700",
-  "bg-emerald-500",
+  "bg-slate-200",
   "bg-emerald-400",
+  "bg-emerald-500",
+  "bg-emerald-700",
+  "bg-emerald-900",
 ];
 
 export function StreakHeatmap({
