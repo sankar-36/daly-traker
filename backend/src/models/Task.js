@@ -19,21 +19,28 @@ const taskSchema = new mongoose.Schema(
       enum: ['high', 'medium', 'low'],
       default: 'medium',
     },
-  category: {
+    category: {
       type: String,
       enum: ['work', 'personal', 'study'],
       required: [true, 'Category is required'],
     },
-      time: {
+    time: {
       type: String,
       required: [true, 'Task time is required'],
       match: [
         /^([0-1]?\d|2[0-3]):[0-5]\d$/,
         'Time must be in HH:MM format (e.g. 09:30)',
       ],
-    },isCompleted: {
+    },
+    isCompleted: {
       type: Boolean,
       default: false,
+    },
+    // Calendar date (YYYY-MM-DD) on which this task was last marked complete.
+    // If this doesn't match today's date, the task is auto-reset to incomplete.
+    completedDate: {
+      type: String,
+      default: null,
     },
   },
   {

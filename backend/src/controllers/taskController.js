@@ -1,6 +1,15 @@
 const Task = require('../models/Task');
 const { updateDailyLog } = require('../utils/logHelper');
 
+// Returns today's date as "YYYY-MM-DD" in local time
+const getTodayKey = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 // @desc    Create a new daily task
 // @route   POST /api/tasks/add
 // @access  Private
@@ -39,6 +48,8 @@ const addTask = async (req, res, next) => {
       throw new Error('Time is required');
     }
 
+    const done = typeof isCompleted === 'boolean' ? isCompleted : false;
+
     //  Create task
     const task = new Task({
       user_id: req.user._id,
@@ -47,7 +58,8 @@ const addTask = async (req, res, next) => {
       priority,
       category,
       time,
-      isCompleted: typeof isCompleted === 'boolean' ? isCompleted : false,
+      isCompleted: done,
+      completedDate: done ? getTodayKey() : null,
     });
 
     const createdTask = await task.save();
@@ -59,12 +71,34 @@ const addTask = async (req, res, next) => {
   }
 };
 
-// @desc    Get user's tasks
+// @desc    Get user's tasks — auto-resets tasks completed on a previous day
 // @route   GET /api/tasks
 // @access  Private
 const getTasks = async (req, res, next) => {
   try {
+    const today = getTodayKey();
     const tasks = await Task.find({ user_id: req.user._id });
+
+    // Find tasks that were marked complete on a past date
+    const staleIds = tasks
+      .filter((t) => t.isCompleted && t.completedDate !== today)
+      .map((t) => t._id);
+
+    if (staleIds.length > 0) {
+      // Reset them in the DB in one bulk operation
+      await Task.updateMany(
+        { _id: { $in: staleIds } },
+        { $set: { isCompleted: false, completedDate: null } }
+      );
+
+      // Update the daily log to reflect the reset
+      await updateDailyLog(req.user._id);
+
+      // Re-fetch the now-correct tasks
+      const freshTasks = await Task.find({ user_id: req.user._id });
+      return res.json(freshTasks);
+    }
+
     res.json(tasks);
   } catch (error) {
     next(error);
@@ -72,7 +106,7 @@ const getTasks = async (req, res, next) => {
 };
 
 // @desc    Update a task
-// @route   PUT /api/tasks/:id
+// @route   PATCH /api/tasks/:taskId/edittask
 // @access  Private
 const updateTask = async (req, res, next) => {
   try {
@@ -90,7 +124,6 @@ const updateTask = async (req, res, next) => {
       throw new Error('Not authorized');
     }
 
-    // 
     if (title && title.trim()) task.title = title.trim();
     if (description !== undefined) task.description = description.trim();
 
@@ -111,7 +144,11 @@ const updateTask = async (req, res, next) => {
     }
 
     if (time) task.time = time;
-    if (typeof isCompleted === 'boolean') task.isCompleted = isCompleted;
+
+    if (typeof isCompleted === 'boolean') {
+      task.isCompleted = isCompleted;
+      task.completedDate = isCompleted ? getTodayKey() : null;
+    }
 
     const updatedTask = await task.save();
     await updateDailyLog(req.user._id);
@@ -124,6 +161,10 @@ const updateTask = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Toggle task completion status
+// @route   PATCH /api/tasks/:taskId/toggletaskstatus
+// @access  Private
 const toggleTaskStatus = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.taskId);
@@ -138,8 +179,9 @@ const toggleTaskStatus = async (req, res, next) => {
       throw new Error('Not authorized');
     }
 
-    //  Boolean flip
+    // Flip completion and track the calendar date
     task.isCompleted = !task.isCompleted;
+    task.completedDate = task.isCompleted ? getTodayKey() : null;
 
     const updatedTask = await task.save();
     await updateDailyLog(req.user._id);
@@ -154,10 +196,8 @@ const toggleTaskStatus = async (req, res, next) => {
   }
 };
 
-
-
 // @desc    Delete a task
-// @route   DELETE /api/tasks/:id
+// @route   DELETE /api/tasks/:taskId/deletetask
 // @access  Private
 const deleteTask = async (req, res, next) => {
   try {
