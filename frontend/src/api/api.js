@@ -25,6 +25,7 @@ export const updateProfile = (payload) => api.put('/auth/profile', payload)
 
 export const getCourses = () => api.get('/courses')
 export const initCourse = (payload) => api.post('/courses/init', payload)
+export const editCourse = (courseId, payload) => api.patch(`/courses/${courseId}/editcourse`, payload)
 export const updateTopicStatus = (courseId, moduleId, topicId, payload) =>
   api.patch(`/courses/${courseId}/modules/${moduleId}/topics/${topicId}/status`, payload)
 export const addTopics = (courseId, topics) => api.post(`/courses/${courseId}/topics`, { topics })

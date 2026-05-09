@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
 import AddCourse from "./pages/AddCourse";
 import CourseDetail from "./pages/CourseDetail";
+import EditCourse from "./pages/EditCourse";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/404";
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/courses" element={<Courses />} />          {/* Layer 3: Pages */}
             <Route path="/courses/add" element={<AddCourse />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/courses/:id/edit" element={<EditCourse />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/progress" element={<Progress />} />
