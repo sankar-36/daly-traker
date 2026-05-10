@@ -1,14 +1,6 @@
 const Task = require('../models/Task');
 const { updateDailyLog } = require('../utils/logHelper');
-
-// Returns today's date as "YYYY-MM-DD" in local time
-const getTodayKey = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+const { getTodayKey, resetStaleDailyTasks } = require('../utils/taskResetHelper');
 
 // @desc    Create a new daily task
 // @route   POST /api/tasks/add
@@ -76,29 +68,13 @@ const addTask = async (req, res, next) => {
 // @access  Private
 const getTasks = async (req, res, next) => {
   try {
-    const today = getTodayKey();
-    const tasks = await Task.find({ user_id: req.user._id });
+    const { resetCount } = await resetStaleDailyTasks(req.user._id);
 
-    // Find tasks that were marked complete on a past date
-    const staleIds = tasks
-      .filter((t) => t.isCompleted && t.completedDate !== today)
-      .map((t) => t._id);
-
-    if (staleIds.length > 0) {
-      // Reset them in the DB in one bulk operation
-      await Task.updateMany(
-        { _id: { $in: staleIds } },
-        { $set: { isCompleted: false, completedDate: null } }
-      );
-
-      // Update the daily log to reflect the reset
+    if (resetCount > 0) {
       await updateDailyLog(req.user._id);
-
-      // Re-fetch the now-correct tasks
-      const freshTasks = await Task.find({ user_id: req.user._id });
-      return res.json(freshTasks);
     }
 
+    const tasks = await Task.find({ user_id: req.user._id });
     res.json(tasks);
   } catch (error) {
     next(error);

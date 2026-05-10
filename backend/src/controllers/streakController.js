@@ -1,6 +1,7 @@
 const Task   = require('../models/Task');
 const Course = require('../models/Course');
 const { calculateStreakValue, getStreakColor } = require('../utils/streakHelper');
+const { getTodayKey, resetStaleDailyTasks } = require('../utils/taskResetHelper');
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -34,12 +35,15 @@ const getTodayStreak = async (req, res, next) => {
   try {
     const userId           = req.user._id;
     const { start, end }   = getTodayRange();
+    const todayKey         = getTodayKey();
+
+    await resetStaleDailyTasks(userId);
 
     // ── STEP 1: Tasks completed today ────────────────────────────────────
     const tasksCompletedToday = await Task.countDocuments({
       user_id     : userId,
       isCompleted : true,
-      updatedAt   : { $gte: start, $lte: end },
+      completedDate: todayKey,
     });
 
     // ── STEP 2: Course topics marked done today ───────────────────────────

@@ -140,6 +140,8 @@ const getProgressOverview = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
+    await updateDailyLog(userId);
+
     // Fetch all data in parallel
     const [tasks, courses, logs] = await Promise.all([
       Task.find({ user_id: userId }),

@@ -2,6 +2,7 @@ const Course = require('../models/Course');
 const Task = require('../models/Task');
 const DailyLog = require('../models/DailyLog');
 const { calculateStreakValue, getStreakColor } = require('../utils/streakHelper');
+const { updateDailyLog } = require('../utils/logHelper');
 
 const toDateKey = (date) => date.toISOString().split('T')[0];
 
@@ -108,6 +109,8 @@ const buildStreakCalendar = (logs, fallbackValue, fallbackColor) => {
 const getDashboard = async (req, res, next) => {
   try {
     const userId = req.user._id;
+
+    await updateDailyLog(userId);
 
     const [courses, tasks, logs] = await Promise.all([
       Course.find({ user_id: userId }),

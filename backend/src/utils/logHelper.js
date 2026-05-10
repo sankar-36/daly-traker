@@ -2,17 +2,13 @@ const DailyLog = require('../models/DailyLog');
 const Task = require('../models/Task');
 const Course = require('../models/Course');
 const { getStreakColor, calculateStreakValue } = require('./streakHelper');
-
-const getDateKey = (date = new Date()) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+const { getTodayKey, resetStaleDailyTasks } = require('./taskResetHelper');
 
 const updateDailyLog = async (userId) => {
   try {
-    const today = getDateKey();
+    const today = getTodayKey();
+
+    await resetStaleDailyTasks(userId);
 
     // ────────────────────────────────
     // ✅ STEP 1: Task — இப்போ என்ன நிலையில் இருக்கு
