@@ -42,4 +42,7 @@ export const getProfileStreak = () => api.get('/progress/streak')
 export const getTodayStreak = () => api.get('/streak/today')
 export const getDashboard = () => api.get('/dashboard')
 
+// AI-powered course generation
+export const generateCourseAI = (title) => api.post('/ai/generate-course', { title }).then(res => res.data.course)
+
 export default api

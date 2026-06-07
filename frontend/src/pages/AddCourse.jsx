@@ -10,6 +10,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { initCourse } from "../api/api";
+import AIGenerateModal from "../components/AIGenerateModal";
 
 const STORAGE_KEY = "addCourseDraft";
 
@@ -45,6 +46,27 @@ export default function AddCourse() {
   const [submitState, setSubmitState] = useState("idle");
   const [error, setError] = useState("");
   const [savedAt, setSavedAt] = useState(null);
+  const [showAIModal, setShowAIModal] = useState(false);
+
+  // Handler for AI-generated course data — normalizes into the form's exact shape
+  const handleAIGenerate = (course) => {
+    const normalized = {
+      title: course.title || "",
+      description: course.description || "",
+      modules: Array.isArray(course.modules)
+        ? course.modules.map((mod) => ({
+            title: mod.title || "",
+            topics: Array.isArray(mod.topics)
+              ? mod.topics.map((topic) => ({
+                  title: typeof topic === "string" ? topic : topic.title || "",
+                }))
+              : [emptyTopic()],
+          }))
+        : [emptyModule()],
+    };
+    setForm(normalized);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+  };
 
   useEffect(() => {
     try {
@@ -217,13 +239,22 @@ export default function AddCourse() {
       <div className="mx-auto w-full max-w-5xl">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <Link
-              to="/courses"
-              className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 no-underline transition-colors hover:text-slate-900"
-            >
-              <FiArrowLeft size={16} />
-              Courses
-            </Link>
+            <div className="mb-3 flex items-center gap-3">
+              <Link
+                to="/courses"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 no-underline transition-colors hover:text-slate-900"
+              >
+                <FiArrowLeft size={16} />
+                Courses
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowAIModal(true)}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-700"
+              >
+                🤖 AI Generate
+              </button>
+            </div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
               Add Course
             </h1>
@@ -420,6 +451,14 @@ export default function AddCourse() {
           </div>
         </form>
       </div>
+
+      {/* AI Generate Modal */}
+      {showAIModal && (
+        <AIGenerateModal
+          onClose={() => setShowAIModal(false)}
+          onGenerate={handleAIGenerate}
+        />
+      )}
     </div>
   );
 }
