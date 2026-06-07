@@ -11,7 +11,7 @@ const updateDailyLog = async (userId) => {
     await resetStaleDailyTasks(userId);
 
     // ────────────────────────────────
-    // ✅ STEP 1: Task — இப்போ என்ன நிலையில் இருக்கு
+    // ✅ STEP 1: Task — 
     // ────────────────────────────────
     const allTasks = await Task.find({ user_id: userId });
     const totalTasks = allTasks.length;
@@ -21,7 +21,7 @@ const updateDailyLog = async (userId) => {
       : Math.round((completedTasks / totalTasks) * 100);
 
     // ────────────────────────────────
-    // ✅ STEP 2: Course Topics — இப்போ என்ன நிலையில் இருக்கு
+    // ✅ STEP 2: Course Topics — 
     // ────────────────────────────────
     const allCourses = await Course.find({ user_id: userId });
     const allTopics = allCourses.flatMap((course) => {
