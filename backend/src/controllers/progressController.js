@@ -56,8 +56,7 @@ const getProgressSummary = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
-    // Daily / Weekly / Monthly grouping example
-    // We will group by status (Completed / Pending) to give a completion rate
+    // Daily / Weekly / Monthly grouping by completion state.
 
     const tasksPipeline = [
       { $match: { user_id: new mongoose.Types.ObjectId(userId) } },
@@ -67,7 +66,7 @@ const getProgressSummary = async (req, res, next) => {
             year: { $year: '$createdAt' },
             month: { $month: '$createdAt' },
             day: { $dayOfMonth: '$createdAt' },
-            status: '$status'
+            isCompleted: '$isCompleted'
           },
           count: { $sum: 1 }
         }
@@ -92,20 +91,21 @@ const getProgressSummary = async (req, res, next) => {
     const aggregatedByDate = {};
     
     tasksStats.forEach(stat => {
-      const { year, month, day, status } = stat._id;
+      const { year, month, day, isCompleted } = stat._id;
       const dateKey = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
       
       if (!aggregatedByDate[dateKey]) {
-        aggregatedByDate[dateKey] = { Complete: 0, Pending: 0, Overdue: 0 };
+        aggregatedByDate[dateKey] = { completed: 0, pending: 0 };
       }
-      aggregatedByDate[dateKey][status] = stat.count;
+      const bucket = isCompleted ? 'completed' : 'pending';
+      aggregatedByDate[dateKey][bucket] = stat.count;
     });
 
     Object.keys(aggregatedByDate).sort().forEach(date => {
       formattedData.labels.push(date);
-      formattedData.completed.push(aggregatedByDate[date].Complete || 0);
-      formattedData.pending.push(aggregatedByDate[date].Pending || 0);
-      formattedData.overdue.push(aggregatedByDate[date].Overdue || 0);
+      formattedData.completed.push(aggregatedByDate[date].completed || 0);
+      formattedData.pending.push(aggregatedByDate[date].pending || 0);
+      formattedData.overdue.push(0);
     });
 
     // You could easily expand this endpoint to allow ?timeframe=weekly or ?timeframe=monthly

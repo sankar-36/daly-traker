@@ -1,5 +1,8 @@
 const Course = require('../models/Course');
 
+const normalizeString = (value) =>
+  typeof value === 'string' ? value.trim() : '';
+
 // normalize various topics input shapes into an array of topic objects
 const normalizeTopics = (topics) => {
   if (!topics) return [];
@@ -35,8 +38,10 @@ const initCourse = async (req, res, next) => {
   try {
     const { title, description, modules } = req.body;
 
+    const normalizedTitle = normalizeString(title);
+
     // 1. Data Validation: Title illaama course create panna koodathu
-    if (!title || !title.trim()) {
+    if (!normalizedTitle) {
       res.status(400);
       throw new Error('Please add a course title');
     }
@@ -44,7 +49,7 @@ const initCourse = async (req, res, next) => {
     // 2. Validate each module has a title (required by ModuleSchema)
     const rawModules = modules || [];
     for (let i = 0; i < rawModules.length; i++) {
-      if (!rawModules[i].title || !rawModules[i].title.trim()) {
+      if (!normalizeString(rawModules[i]?.title)) {
         res.status(400);
         throw new Error(`Module at index ${i} is missing a title`);
       }
@@ -53,14 +58,14 @@ const initCourse = async (req, res, next) => {
     // 3. New Object Instantiation (Puthu Structure-oda)
     const course = new Course({
       user_id: req.user._id, // Auth middleware-la irunthu varum
-      title: title.trim(),
+      title: normalizedTitle,
       description,
       modules: rawModules.map((mod) => ({
-        title: mod.title.trim(),
+        title: normalizeString(mod.title),
         // Note: isCurrent is NOT set here — the pre-save hook controls it
         topics: (mod.topics || [])
           .map((topic) => ({
-            title: typeof topic === 'string' ? topic.trim() : (topic.title || '').trim(),
+            title: typeof topic === 'string' ? topic.trim() : normalizeString(topic?.title),
             isDone: topic.isDone ?? false,
           }))
           .filter((topic) => topic.title), // filter out topics with no title (required field)
@@ -109,8 +114,13 @@ const editCourse = async (req, res, next) => {
     }
 
     // ✅ Title update
-    if (title && title.trim()) {
-      course.title = title.trim();
+    if (title !== undefined) {
+      const normalizedTitle = normalizeString(title);
+      if (!normalizedTitle) {
+        res.status(400);
+        throw new Error('Please add a course title');
+      }
+      course.title = normalizedTitle;
     }
 
     // ✅ Description update
@@ -122,12 +132,12 @@ const editCourse = async (req, res, next) => {
     if (modules && Array.isArray(modules)) {
       course.modules = modules.map((mod, index) => ({
         _id: mod._id,  // existing id வச்சிரு
-        title: (mod.title || '').trim(),
+        title: normalizeString(mod.title),
         isCurrent: mod.isCurrent ?? false,
         order: mod.order ?? index,
         topics: (mod.topics || []).map((topic) => ({
           _id: topic._id,  // existing id வச்சிரு
-          title: typeof topic === 'string' ? topic : (topic.title || '').trim(),
+          title: typeof topic === 'string' ? topic.trim() : normalizeString(topic?.title),
           isDone: topic.isDone ?? false,
         })).filter((t) => t.title),
       })).filter((m) => m.title);
@@ -153,8 +163,10 @@ const addModuleWithTopics = async (req, res, next) => {
     const { courseId } = req.params;
     const { title, topics } = req.body;
 
+    const normalizedTitle = normalizeString(title);
+
     //  Module title validation
-    if (!title || !title.trim()) {
+    if (!normalizedTitle) {
       res.status(400);
       throw new Error('Module title is required');
     }
@@ -181,7 +193,7 @@ const addModuleWithTopics = async (req, res, next) => {
     //  Topics build 
     const normalizedTopics = topics
       .map((t) => ({
-        title: (typeof t === 'string' ? t : t.title || '').trim(),
+        title: typeof t === 'string' ? t.trim() : normalizeString(t?.title),
         isDone: false,
       }))
       .filter((t) => t.title); // empty title filter பண்ணு
@@ -193,7 +205,7 @@ const addModuleWithTopics = async (req, res, next) => {
 
     //  Module build 
     const newModule = {
-      title: title.trim(),
+      title: normalizedTitle,
       isCurrent: false,
       order: course.modules.length,
       topics: normalizedTopics,

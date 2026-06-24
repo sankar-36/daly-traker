@@ -16,6 +16,9 @@
 
 const OpenAI = require('openai');
 
+const normalizeString = (value) =>
+  typeof value === 'string' ? value.trim() : '';
+
 // ─── Retry Config ────────────────────────────────────────────────────────────
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 2000; // 2s, 4s, 8s backoff
@@ -77,7 +80,11 @@ const callOllamaWithRetry = async (prompt) => {
 
 // ─── Response Parser ─────────────────────────────────────────────────────────
 const parseOllamaResponse = (text) => {
-  let cleaned = text.trim();
+  let cleaned = normalizeString(text);
+
+  if (!cleaned) {
+    throw new Error('AI returned an empty response. Please try again.');
+  }
 
   // Strip markdown code fences if the model wraps the response
   if (cleaned.startsWith('```')) {
@@ -117,9 +124,10 @@ const parseOllamaResponse = (text) => {
 const generateCourse = async (req, res, next) => {
   try {
     const { title } = req.body;
+    const normalizedTitle = normalizeString(title);
 
     // Validate: title must not be empty
-    if (!title || !title.trim()) {
+    if (!normalizedTitle) {
       res.status(400);
       throw new Error('Please provide a course title to generate');
     }
@@ -141,7 +149,7 @@ const generateCourse = async (req, res, next) => {
     // Mark cooldown BEFORE the API call
     userCooldowns.set(userId, now);
 
-    const prompt = buildCoursePrompt(title.trim());
+    const prompt = buildCoursePrompt(normalizedTitle);
 
     // Call Ollama with automatic retry on errors
     const text = await callOllamaWithRetry(prompt);
