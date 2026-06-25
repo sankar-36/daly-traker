@@ -14,28 +14,30 @@ export const AuthProvider = ({ children }) => {
   })
 
   useEffect(() => {
-    if (user) localStorage.setItem('userInfo', JSON.stringify(user))
-    else localStorage.removeItem('userInfo')
+    if (user) {
+      localStorage.setItem('userInfo', JSON.stringify(user))
+      if (user.token) localStorage.setItem('token', user.token)
+    } else {
+      localStorage.removeItem('userInfo')
+      localStorage.removeItem('token')
+    }
   }, [user])
 
   const login = async (email, password) => {
     const res = await api.login({ email, password })
     setUser(res.data)
-    // ProtectedRoute checks localStorage.getItem("token") — write it here
-    if (res.data?.token) localStorage.setItem('token', res.data.token)
     return res
   }
 
   const register = async (username, email, password) => {
     const res = await api.register({ username, email, password })
     setUser(res.data)
-    // ProtectedRoute checks localStorage.getItem("token") — write it here
-    if (res.data?.token) localStorage.setItem('token', res.data.token)
     return res
   }
 
   const logout = () => {
     setUser(null)
+    localStorage.removeItem('userInfo')
     localStorage.removeItem('token')
   }
 

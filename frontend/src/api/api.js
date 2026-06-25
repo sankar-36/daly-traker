@@ -4,19 +4,56 @@ const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const api = axios.create({ baseURL })
 
+const clearStoredAuth = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('userInfo')
+}
+
+const getStoredToken = () => {
+  const token = localStorage.getItem('token')
+  if (token) return token
+
+  const raw = localStorage.getItem('userInfo')
+  if (!raw) return null
+
+  try {
+    return JSON.parse(raw).token || null
+  } catch (e) {
+    clearStoredAuth()
+    return null
+  }
+}
+
 // Attach token if available
 api.interceptors.request.use((config) => {
-  try {
-    const raw = localStorage.getItem('userInfo')
-    if (raw) {
-      const token = JSON.parse(raw).token
-      if (token) config.headers.Authorization = `Bearer ${token}`
-    }
-  } catch (e) {
-    // ignore
+  const token = getStoredToken()
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
+
   return config
 })
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = error?.response?.data?.message || ''
+
+    if (
+      error?.response?.status === 401 &&
+      message.toLowerCase().includes('token expired')
+    ) {
+      clearStoredAuth()
+
+      if (window.location.pathname !== '/login') {
+        window.location.assign('/login')
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)
 
 export const register = (data) => api.post('/auth/register', data)
 export const login = (data) => api.post('/auth/login', data)
